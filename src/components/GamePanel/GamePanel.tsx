@@ -1,7 +1,7 @@
 import { Component, createSignal } from 'solid-js'
 
 import Display from 'components/Display'
-import Input from 'components/Input'
+import MainInput from 'components/MainInput'
 
 import styles from './GamePanel.module.scss'
 
@@ -18,11 +18,10 @@ const GamePanel: Component = () => {
   return (
     <div class={styles.panel}>
       <Display wordList={wordList()} />
-      <Input
-        targetWord={wordList()[0]}
+      <MainInput
+        targetWord={wordList()[0] || ''}
         onCorrect={() => {
-          setWordList((prev) => prev.slice(1))
-          console.log('eiei')
+          setWordList((prev) => (prev.length > 1 ? prev.slice(1) : []))
         }}
       />
     </div>
