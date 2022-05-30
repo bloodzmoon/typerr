@@ -84,7 +84,7 @@ const MainInput: Component<IProps> = (props) => {
                   [styles.cursorBlinking]: isCursorBlink(),
                 }}
                 style={{
-                  transform: `translateX(${32 * value().length}px)`,
+                  transform: `translateX(${FONT_WIDTH * value().length}px)`,
                 }}
               />
             </Show>
