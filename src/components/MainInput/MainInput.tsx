@@ -1,5 +1,6 @@
 import {
   Component,
+  createEffect,
   createSignal,
   For,
   onCleanup,
@@ -7,14 +8,20 @@ import {
   Show,
 } from 'solid-js'
 
+import { useWordStack } from 'contexts/WordStackContext'
+import { useCoin } from 'contexts/CoinContext'
+
 import styles from './MainInput.module.scss'
 
-const MainInput: Component<IProps> = (props) => {
+const MainInput: Component = () => {
   const FONT_WIDTH = 32
   const MAIN_INPUT_ID = 'typerr-main-input'
   const ALPHABET_REGEX = new RegExp(/^[A-Z]$/, 'i')
   const BACK_SPACE = 'Backspace'
   const ENTER = 'Enter'
+
+  const [, { getTargetWord, burnWord, getWordValue }] = useWordStack()
+  const [, { addCoin }] = useCoin()
 
   const [value, setValue] = createSignal('')
   const [isCursorBlink, setIsCursorBlink] = createSignal(true)
@@ -29,11 +36,17 @@ const MainInput: Component<IProps> = (props) => {
     }, 1000)
   }
 
+  const completeTargetWord = () => {
+    setValue('')
+    burnWord()
+    addCoin(getWordValue())
+  }
+
   const keypressHandler = (e: KeyboardEvent) => {
     // Type 'A-Z'
     if (ALPHABET_REGEX.test(e.key)) {
       stopCursorBlink()
-      if (value().length >= props.targetWord.length) {
+      if (value().length >= getTargetWord().length) {
         return
       }
       setValue((v) => v.concat(e.key.toLowerCase()))
@@ -49,7 +62,7 @@ const MainInput: Component<IProps> = (props) => {
     // Type 'Enter'
     else if (e.key === ENTER) {
       stopCursorBlink()
-      if (value() !== props.targetWord) {
+      if (value() !== getTargetWord()) {
         const mainInput = document.getElementById(MAIN_INPUT_ID)
         if (!mainInput?.classList.contains(styles.errorSubmit)) {
           mainInput?.classList.add(styles.errorSubmit)
@@ -59,10 +72,15 @@ const MainInput: Component<IProps> = (props) => {
         }
         return
       }
-      props.onCorrect()
-      setValue('')
+      completeTargetWord()
     }
   }
+
+  createEffect(() => {
+    if (!getTargetWord()) {
+      setValue('')
+    }
+  })
 
   onMount(() => {
     document.body.addEventListener('keypress', keypressHandler)
@@ -74,7 +92,7 @@ const MainInput: Component<IProps> = (props) => {
 
   return (
     <section id={MAIN_INPUT_ID} class={styles.container}>
-      <For each={Array.from(props.targetWord)}>
+      <For each={Array.from(getTargetWord())}>
         {(char, index) => (
           <>
             <Show when={index() === 0}>
@@ -107,8 +125,3 @@ const MainInput: Component<IProps> = (props) => {
 }
 
 export default MainInput
-
-interface IProps {
-  targetWord: string
-  onCorrect: () => void
-}

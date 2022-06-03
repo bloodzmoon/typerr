@@ -59,10 +59,10 @@ $fontWidth: 32px;
     }
     25% {
         transform: translateX(6px);
-        outline: 12px solid var(--red500);
+        background: var(--red500);
     }
     50% {
         transform: translateX(-6px);
-        outline: 12px solid var(--red500);
+        background: var(--red500);
     }
 }

@@ -24,6 +24,7 @@
     "vite-tsconfig-paths": "3.5.0"
   },
   "dependencies": {
+    "solid-icons": "0.4.12",
     "solid-js": "1.4.2"
   }
 }
